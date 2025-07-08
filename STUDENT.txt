@@ -1,3 +1,4 @@
-Nama: Muhammad Rafah Rizki Fadillah  
-Email: fc009d5y1057@student.devacademy.id
-https://lajng.github.io/story-explorer-final/
+Nama: Muhammad Rafah Rizki Fadillah
+Kelas: Belajar Pengembangan Web Intermediate
+URL GitHub: https://github.com/lajng/story-explorer-final
+URL Live: https://lajng.github.io/story-explorer-final/
