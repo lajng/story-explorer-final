@@ -1,32 +1,39 @@
-const CACHE_NAME = 'story-explorer-v1';
-const OFFLINE_URL = 'offline.html';
-
-const urlsToCache = [
+const CACHE_NAME = 'story-explorer-cache-v1';
+const OFFLINE_URL = '/offline.html';
+const ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
-  '/manifest.webmanifest',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/assets/index.css',
-  '/assets/index.js'
+  '/css/styles.css',
+  '/js/app.js',
+  '/js/views/story-view.js',
+  '/js/views/map-view.js',
+  '/js/presenters/story-presenter.js',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js'
 ];
 
-self.addEventListener('install', event => {
+// Install: cache static assets
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
+      return cache.addAll(ASSETS);
     })
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
+// Activate: remove old cache
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
+    caches.keys().then(cacheNames =>
       Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) return caches.delete(key);
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
         })
       )
     )
@@ -34,10 +41,34 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
+// Fetch: serve from cache, fallback offline
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request).then(resp => {
-      return resp || caches.match(OFFLINE_URL);
-    }))
+    caches.match(event.request).then(response => {
+      return (
+        response ||
+        fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+      );
+    })
+  );
+});
+
+// Push Notification
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {
+    title: 'Story Explorer',
+    body: 'Cerita baru telah tersedia!',
+  };
+
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-192x192.png'
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
   );
 });

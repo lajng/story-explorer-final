@@ -3,36 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Offline | Story Explorer</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <title>Story Explorer - Offline</title>
+  <link rel="stylesheet" href="/css/styles.css" />
   <style>
     body {
-      display: flex;
-      height: 100vh;
-      justify-content: center;
-      align-items: center;
       text-align: center;
-      background-color: #f5f5f5;
-      color: #444;
-      padding: 1rem;
+      padding: 2rem;
       font-family: sans-serif;
     }
-
     .offline-wrapper {
-      max-width: 400px;
+      max-width: 600px;
+      margin: auto;
     }
-
-    .offline-wrapper img {
-      width: 120px;
+    .offline-wrapper h1 {
+      font-size: 2rem;
       margin-bottom: 1rem;
+    }
+    .offline-wrapper img {
+      max-width: 200px;
+      margin: 1rem 0;
+    }
+    .offline-wrapper p {
+      color: #666;
     }
   </style>
 </head>
 <body>
   <div class="offline-wrapper">
-    <img src="icons/icon-192x192.png" alt="Offline" />
-    <h1>Oops! Kamu sedang offline</h1>
-    <p>Sepertinya koneksi internet kamu terputus. Silakan coba lagi nanti atau cek koneksi jaringanmu.</p>
+    <h1>🔌 Offline Mode</h1>
+    <img src="/icons/icon-192x192.png" alt="Offline" />
+    <p>Anda sedang offline. Silakan periksa koneksi internet Anda.</p>
+    <p>Aplikasi ini tetap bisa digunakan sebagian besar berkat fitur PWA.</p>
   </div>
 </body>
 </html>
