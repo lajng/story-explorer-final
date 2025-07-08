@@ -3,15 +3,18 @@
   "version": "1.0.0",
   "description": "A Vanilla JS application to explore stories",
   "main": "index.js",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "deploy": "gh-pages -d dist"
+},
+
   "keywords": [],
   "author": "Muhammad Rafah Rizki Fadillah",
   "license": "MIT",
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "vite": "^7.0.0"
   },
   "dependencies": {
