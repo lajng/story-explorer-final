@@ -1,5 +1,4 @@
 // File: js/views/map-view.js
-
 import * as L from 'https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js';
 
 const MapView = {
@@ -10,26 +9,30 @@ const MapView = {
     const container = document.getElementById('stories-map');
     if (!container) return;
 
+    // Bersihkan kontainer agar tidak ada elemen duplikat
+    container.innerHTML = '';
+
     if (this.storyMap) {
       this.storyMap.remove();
+      this.storyMap = null;
     }
 
-    this.storyMap = L.map('stories-map').setView([-6.2, 106.8], 5);
+    this.storyMap = L.map(container).setView([-6.2, 106.8], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.storyMap);
 
-    // Penting untuk SPA: pastikan ukuran map dihitung ulang
+    // Tunggu agar layout DOM stabil (SPA friendly)
     setTimeout(() => {
       this.storyMap.invalidateSize();
-    }, 200);
+    }, 300);
 
     listStory.forEach(story => {
       if (story.lat && story.lon) {
         L.marker([story.lat, story.lon])
           .addTo(this.storyMap)
-          .bindPopup(`<strong>${story.name}</strong><br>${story.description}`);
+          .bindPopup(`<strong>${story.name || story.title}</strong><br>${story.description || story.body}`);
       }
     });
   },
@@ -38,20 +41,22 @@ const MapView = {
     const container = document.getElementById('location-map');
     if (!container) return;
 
+    container.innerHTML = '';
+
     if (this.addStoryMap) {
       this.addStoryMap.remove();
+      this.addStoryMap = null;
     }
 
-    this.addStoryMap = L.map('location-map').setView([-6.2, 106.8], 10);
+    this.addStoryMap = L.map(container).setView([-6.2, 106.8], 10);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.addStoryMap);
 
-    // Penting untuk SPA: hindari map pecah / tidak utuh
     setTimeout(() => {
       this.addStoryMap.invalidateSize();
-    }, 200);
+    }, 300);
 
     let marker = null;
 
@@ -64,7 +69,6 @@ const MapView = {
         marker = L.marker([lat, lng]).addTo(MapView.addStoryMap);
       }
 
-      // Simpan lokasi di AppState
       window.AppState = window.AppState || {};
       window.AppState.currentLocation = {
         lat: lat.toFixed(6),
@@ -75,4 +79,3 @@ const MapView = {
 };
 
 export default MapView;
-  

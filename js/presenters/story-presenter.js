@@ -30,6 +30,13 @@ const StoryPresenter = {
 
       StoryView.renderStoryList(data.listStory);
       MapView.initStoryMap(data.listStory);
+
+      // Pastikan ukuran peta disesuaikan dengan SPA
+      setTimeout(() => {
+        if (MapView.storyMap) {
+          MapView.storyMap.invalidateSize();
+        }
+      }, 300);
     } catch (err) {
       StoryView.renderError(err.message || 'Terjadi kesalahan saat memuat cerita.');
     }
@@ -83,7 +90,6 @@ const StoryPresenter = {
 
         alert('Cerita berhasil ditambahkan!');
 
-        // ✅ Simpan juga ke IndexedDB
         saveStory({
           id: result.story.id || Date.now().toString(),
           title: result.story.name || "Cerita Offline",
