@@ -16,7 +16,6 @@ const StoryView = {
       container.appendChild(card);
     });
 
-    // Event listener tombol Simpan ke Favorite
     container.addEventListener('click', (e) => {
       if (e.target.classList.contains('btn-favorite')) {
         const story = JSON.parse(e.target.getAttribute('data-story'));
@@ -62,6 +61,36 @@ const StoryView = {
         });
       }
     });
+
+    return section;
+  },
+
+  renderHomePage() {
+    const section = document.createElement('section');
+    section.className = 'page';
+    section.id = 'home-page';
+
+    section.innerHTML = `
+      <h2>Story Terbaru</h2>
+      <div id="story-list" class="story-list">Loading...</div>
+    `;
+
+    return section;
+  },
+
+  renderAddStoryPage() {
+    const section = document.createElement('section');
+    section.className = 'page';
+    section.id = 'add-story-page';
+
+    section.innerHTML = `
+      <h2>Tambah Cerita</h2>
+      <form id="add-story-form">
+        <input type="text" id="title" name="title" placeholder="Judul" required />
+        <textarea id="description" name="description" placeholder="Deskripsi" required></textarea>
+        <button type="submit">Kirim</button>
+      </form>
+    `;
 
     return section;
   }

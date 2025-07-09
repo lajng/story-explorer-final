@@ -61,13 +61,12 @@ export default class Presenter {
   }
 
   handleSubmit(formData) {
-    // Hapus field yang tidak sesuai
     const description = formData.get('description');
     const photo = formData.get('photo');
     const lat = formData.get('lat');
     const lon = formData.get('lon');
 
-    // Simulasi API request
+    // Simulasi kirim data
     console.log({ description, photo, lat, lon });
 
     this.view.showAlert('Story berhasil ditambahkan!');
@@ -99,6 +98,17 @@ export default class Presenter {
     });
   }
 
+  showFavorites() {
+    import('./views/story-view.js').then(module => {
+      const StoryView = module.default;
+      const section = StoryView.renderFavoriteStoriesPage();
+      this.view.render(section);
+    }).catch(err => {
+      console.error('Gagal memuat halaman favorit:', err);
+      this.view.showAlert('Gagal memuat halaman favorit!');
+    });
+  }
+
   logout() {
     this.isLoggedIn = false;
     this.updateNav();
@@ -107,7 +117,12 @@ export default class Presenter {
   }
 
   updateNav() {
-    document.getElementById('nav-login').style.display = this.isLoggedIn ? 'none' : '';
-    document.getElementById('nav-logout').style.display = this.isLoggedIn ? '' : 'none';
+    const loginBtn = document.getElementById('nav-login');
+    const logoutBtn = document.getElementById('nav-logout');
+
+    if (loginBtn && logoutBtn) {
+      loginBtn.style.display = this.isLoggedIn ? 'none' : '';
+      logoutBtn.style.display = this.isLoggedIn ? '' : 'none';
+    }
   }
 }

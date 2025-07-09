@@ -1,4 +1,3 @@
-// File: js/presenters/auth-presenter.js
 import AuthService from '../services/auth-service.js';
 
 const AuthPresenter = {
@@ -20,6 +19,13 @@ const AuthPresenter = {
         AuthService.logout();
         window.location.hash = '#login';
       });
+    }
+  },
+
+  initRegisterHandler() {
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', this.handleRegister);
     }
   },
 
@@ -48,7 +54,7 @@ const AuthPresenter = {
         window.location.hash = '#home';
       }, 1000);
     } catch (err) {
-      AuthService.logout(); // prevent stale token
+      AuthService.logout();
       message.textContent = 'Login gagal: ' + err.message;
       message.style.color = 'red';
     }
@@ -74,8 +80,6 @@ const AuthPresenter = {
       return;
     }
 
-    console.log('Data yang dikirim:', { name, email, password }); // Tambahkan ini
-
     try {
       const res = await fetch('https://story-api.dicoding.dev/v1/register', {
         method: 'POST',
@@ -98,7 +102,6 @@ const AuthPresenter = {
       message.style.color = 'red';
     }
   }
-
 };
 
 export default AuthPresenter;
