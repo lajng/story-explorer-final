@@ -1,0 +1,10 @@
+{
+  "name": "Story Explorer",
+  "short_name": "StoryApp",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4A90E2",
+  "orientation": "portrait",
+  "description": "Aplikasi untuk mengeksplorasi dan membagikan cerita melalui peta."
+}
