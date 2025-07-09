@@ -1,13 +1,12 @@
 {
   "name": "Story Explorer",
   "short_name": "StoryApp",
-  "description": "Aplikasi eksplorasi cerita dengan dukungan PWA & push notification.",
   "start_url": "/index.html",
-  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1976d2",
+  "theme_color": "#4A90E2",
   "orientation": "portrait",
+  "description": "Aplikasi untuk mengeksplorasi dan membagikan cerita melalui peta.",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

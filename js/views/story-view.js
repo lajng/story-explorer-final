@@ -1,102 +1,69 @@
-import { getAllStories } from "../utils/indexeddb.js";
+import { saveStory, getAllStories, deleteStory } from '../utils/indexeddb.js';
 
 const StoryView = {
-  async renderHomePage() {
-    const section = document.createElement('section');
-    section.className = 'page';
-    section.id = 'home-page';
+  render(stories) {
+    const container = document.getElementById('story-list');
+    container.innerHTML = '';
 
-    section.innerHTML = `
-      <h1>Explore Amazing Stories</h1>
-      <div id="stories-container" class="story-list"></div>
-      <div id="stories-map" class="map-container" style="height: 400px; margin-top: 1rem;"></div>
-    `;
-
-    // 🔄 Tampilkan story dari IndexedDB
-    setTimeout(() => {
-      getAllStories((offlineStories) => {
-        if (offlineStories && offlineStories.length > 0) {
-          this.renderStoryList(offlineStories, section);
-        }
-      });
-    }, 0);
-
-    return section;
-  },
-
-  async renderAddStoryPage() {
-    const section = document.createElement('section');
-    section.className = 'page';
-    section.id = 'add-story-page';
-
-    section.innerHTML = `
-      <h2>Tambah Cerita</h2>
-      <form id="story-form">
-        <label for="story-description">Deskripsi</label>
-        <textarea id="story-description" name="description" required></textarea>
-
-        <div class="camera-container">
-          <video id="camera-preview" autoplay playsinline></video>
-          <img id="captured-image" alt="Captured" style="display:none;" />
-          <div class="camera-controls">
-            <button type="button" id="start-camera">Start Camera</button>
-            <button type="button" id="capture-photo">Capture Photo</button>
-            <button type="button" id="retake-photo">Retake</button>
-          </div>
-        </div>
-
-        <div class="map-container">
-          <h3>Pilih Lokasi</h3>
-          <div id="location-map" style="height: 400px;"></div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" id="submit-btn" class="btn btn-primary">Kirim</button>
-        </div>
-      </form>
-    `;
-
-    return section;
-  },
-
-  renderStoryList(stories, root = document) {
-    const container = root.querySelector('#stories-container');
-    if (!container) return;
-
-    container.innerHTML = ''; // Bersihkan sebelumnya
-
-    stories.forEach(story => {
-      const storyElement = document.createElement('div');
-      storyElement.className = 'story-card';
-      storyElement.innerHTML = `
-        <div class="story-content">
-          <h3>${story.name || story.title || 'Tanpa Judul'}</h3>
-          <p>${story.description || story.body || ''}</p>
-          ${
-            story.createdAt
-              ? `<small>${new Date(story.createdAt).toLocaleDateString()}</small>`
-              : ''
-          }
-          ${
-            story.lat && story.lon
-              ? `<p><span>📍 ${story.lat}, ${story.lon}</span></p>`
-              : ''
-          }
-        </div>
+    stories.forEach((story) => {
+      const card = document.createElement('div');
+      card.className = 'story-card';
+      card.innerHTML = `
+        <h3>${story.title || 'Tanpa Judul'}</h3>
+        <p>${story.description}</p>
+        <button class="btn-favorite" data-story='${JSON.stringify(story)}'>❤️ Simpan ke Favorite</button>
       `;
-      container.appendChild(storyElement);
+      container.appendChild(card);
+    });
+
+    // Event listener tombol Simpan ke Favorite
+    container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-favorite')) {
+        const story = JSON.parse(e.target.getAttribute('data-story'));
+        saveStory(story);
+        alert('Story disimpan ke Favorite!');
+      }
     });
   },
 
-  renderError(message) {
-    const container = document.getElementById('stories-container');
-    if (!container) return;
+  renderFavoriteStoriesPage() {
+    const section = document.createElement('section');
+    section.className = 'page';
+    section.id = 'favorites-page';
 
-    container.innerHTML = `
-      <div class="error-message">
-        <p>${message}</p>
-      </div>
+    section.innerHTML = `
+      <h2>Favorite Stories</h2>
+      <div id="favorites-container" class="story-list"></div>
     `;
+
+    getAllStories().then((stories) => {
+      const container = section.querySelector('#favorites-container');
+      if (stories.length === 0) {
+        container.innerHTML = '<p>Tidak ada story favorit.</p>';
+      } else {
+        stories.forEach((story) => {
+          const el = document.createElement('div');
+          el.className = 'story-card';
+          el.innerHTML = `
+            <h3>${story.title || 'Tanpa Judul'}</h3>
+            <p>${story.description}</p>
+            <button data-id="${story.id}" class="delete-btn">🗑️ Hapus</button>
+          `;
+          container.appendChild(el);
+        });
+
+        container.addEventListener('click', (e) => {
+          if (e.target.classList.contains('delete-btn')) {
+            const id = e.target.getAttribute('data-id');
+            deleteStory(id).then(() => {
+              e.target.closest('.story-card').remove();
+            });
+          }
+        });
+      }
+    });
+
+    return section;
   }
 };
 

@@ -1,74 +1,53 @@
+// sw.js
+
 const CACHE_NAME = 'story-explorer-cache-v1';
-const OFFLINE_URL = '/offline.html';
-const ASSETS = [
+const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/offline.html',
-  '/css/styles.css',
-  '/js/app.js',
-  '/js/views/story-view.js',
-  '/js/views/map-view.js',
-  '/js/presenters/story-presenter.js',
+  '/manifest.webmanifest',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
+  '/css/styles.css',
+  '/offline.html',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js'
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
 ];
 
-// Install: cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS);
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // agar langsung aktif
 });
 
-// Activate: remove old cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames =>
+    caches.keys().then((cacheNames) =>
       Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) return caches.delete(cache);
         })
       )
     )
   );
-  self.clients.claim();
+  self.clients.claim(); // agar langsung mengontrol semua client
 });
 
-// Fetch: serve from cache, fallback offline
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then(response => {
+    caches.match(event.request).then((cachedResponse) => {
       return (
-        response ||
-        fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+        cachedResponse ||
+        fetch(event.request).catch(() => {
+          if (event.request.mode === 'navigate') {
+            return caches.match('/offline.html');
+          }
+        })
       );
     })
-  );
-});
-
-// Push Notification
-self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : {
-    title: 'Story Explorer',
-    body: 'Cerita baru telah tersedia!',
-  };
-
-  const options = {
-    body: data.body,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png'
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
   );
 });

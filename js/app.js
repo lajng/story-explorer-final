@@ -53,6 +53,9 @@ const app = {
         main.appendChild(await StoryView.renderAddStoryPage());
         StoryPresenter.initSubmitHandler();
         break;
+      case '#favorites':
+        main.appendChild(await StoryView.renderFavoriteStoriesPage());
+        break;
       default:
         main.innerHTML = '<p>Halaman tidak ditemukan</p>';
     }

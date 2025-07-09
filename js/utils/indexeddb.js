@@ -1,46 +1,31 @@
-let db;
+// File: js/utils/indexeddb.js
+import { openDB } from 'https://cdn.jsdelivr.net/npm/idb@7/+esm';
 
-export function initDB() {
-  const request = indexedDB.open('story-db', 1);
+const DB_NAME = 'story-explorer-db';
+const STORE_NAME = 'favorite-stories';
 
-  request.onupgradeneeded = (event) => {
-    db = event.target.result;
-    if (!db.objectStoreNames.contains('stories')) {
-      db.createObjectStore('stories', { keyPath: 'id' });
-    }
-  };
-
-  request.onsuccess = (event) => {
-    db = event.target.result;
-    console.log('✅ IndexedDB initialized');
-  };
-
-  request.onerror = (event) => {
-    console.error('❌ IndexedDB failed:', event.target.errorCode);
-  };
+export async function initDB() {
+  return openDB(DB_NAME, 1, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
+    },
+  });
 }
 
-export function saveStory(story) {
-  if (!db) return;
-  const tx = db.transaction('stories', 'readwrite');
-  const store = tx.objectStore('stories');
-  store.put(story);
+export async function saveStory(story) {
+  const db = await initDB();
+  await db.put(STORE_NAME, story);
 }
 
-export function getAllStories(callback) {
-  if (!db) return;
-  const tx = db.transaction('stories', 'readonly');
-  const store = tx.objectStore('stories');
-  const request = store.getAll();
-
-  request.onsuccess = () => {
-    callback(request.result);
-  };
+export async function getAllStories(callback) {
+  const db = await initDB();
+  const stories = await db.getAll(STORE_NAME);
+  callback(stories);
 }
 
-export function deleteStory(id) {
-  if (!db) return;
-  const tx = db.transaction('stories', 'readwrite');
-  const store = tx.objectStore('stories');
-  store.delete(id);
+export async function deleteStory(id) {
+  const db = await initDB();
+  await db.delete(STORE_NAME, id);
 }
